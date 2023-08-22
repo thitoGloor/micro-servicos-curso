@@ -1,6 +1,6 @@
 package com.devsuperior.hrapigatewayzuul.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -11,13 +11,14 @@ import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 
 @Configuration
 @EnableResourceServer
-public class ControllerServerConfig extends ResourceServerConfigurerAdapter {
+@RequiredArgsConstructor
+public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 
+    private final JwtTokenStore tokenStore;
     private static final String[] PUBLIC = { "/hr-oauth/oauth/token" };
     private static final String[] OPERATOR = { "/hr-worker/**" };
-    private static final String[] ADMIN = { "hr-payroll/**", "/hr-user/**" };
-    @Autowired
-    private JwtTokenStore tokenStore;
+    private static final String[] ADMIN = {
+            "/hr-payroll/**", "/hr-user/**", "/actuator/**", "/hr-worker/actuator/**", "/hr-oauth/actuator/**" };
 
     @Override
     public void configure(ResourceServerSecurityConfigurer resources) throws Exception {
@@ -29,7 +30,7 @@ public class ControllerServerConfig extends ResourceServerConfigurerAdapter {
         httpSecurity.authorizeRequests()
                 .antMatchers(PUBLIC).permitAll()
                 .antMatchers(HttpMethod.GET, OPERATOR).hasAnyRole("OPERATOR", "ADMIN")
-                .antMatchers(ADMIN).hasAnyRole("ADMIN")
+                .antMatchers(ADMIN).hasRole("ADMIN")
                 .anyRequest().authenticated();
     }
 }

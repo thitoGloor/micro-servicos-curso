@@ -31,10 +31,10 @@ public class UserService implements UserDetailsService {
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
         User user = userFeignClients.findByEmail(userName).getBody();
         if (user == null) {
-            logger.error("email not found" + userName);
+            //logger.error("email not found" + userName);
             throw new UsernameNotFoundException("Email nao encontrado");
         }
-        logger.info("Email: " + userName);
+       // logger.info("Email: " + userName);
         return user;
     }
 }
